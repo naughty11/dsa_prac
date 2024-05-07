@@ -1,0 +1,180 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+class node
+{
+public:
+    int data;
+    node *left;
+    node *right;
+};
+
+class Tree
+{
+public:
+    int h, flag;
+    Tree()
+    {
+        h = 0;
+        flag = 0;
+    }
+    void insert_node(node *, node *);
+    void height(node *, int);
+    void search(node *, int);
+    void inorder(node *);
+    void mirror(node *);
+    void display(node *, int); // Added display function
+};
+
+void Tree::insert_node(node *root, node *s)
+{
+    if (s->data > root->data)
+    {
+        if (root->right == nullptr)
+        {
+            root->right = s;
+        }
+        else
+        {
+            insert_node(root->right, s);
+        }
+    }
+    if (s->data <= root->data)
+    {
+        if (root->left == nullptr)
+        {
+            root->left = s;
+        }
+        else
+        {
+            insert_node(root->left, s);
+        }
+    }
+}
+
+void Tree::inorder(node *T)
+{
+    if (T)
+    {
+        inorder(T->left);
+        cout << "    " << T->data;
+        inorder(T->right);
+    }
+}
+
+void Tree::height(node *root, int k)
+{
+    if (root)
+    {
+        if (k > h)
+            h = k;
+        height(root->right, k + 1);
+        height(root->left, k + 1);
+    }
+}
+
+void Tree::mirror(node *root)
+{
+    node *temp;
+    if (root)
+    {
+        temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+        mirror(root->left);
+        mirror(root->right);
+    }
+}
+
+void Tree::search(node *root, int k)
+{
+    if (root)
+    {
+        if (k == root->data)
+            flag = 1;
+        else if (k < root->data)
+            search(root->left, k);
+        else
+            search(root->right, k);
+    }
+}
+
+// Added display function
+void Tree::display(node *root, int level)
+{
+    if (root == nullptr)
+        return;
+
+    display(root->right, level + 1);
+    for (int i = 0; i < level; i++)
+        cout << "   ";
+    cout << root->data << endl;
+    display(root->left, level + 1);
+}
+
+int main()
+{
+    Tree bst;
+
+    int choice;
+    int key;
+    node *root = new node{50, nullptr, nullptr};
+
+    do
+    {
+        cout << "\n----- Binary Search Tree Operations -----";
+        cout << "\n1. Insert a node";
+        cout << "\n2. Inorder Traversal";
+        cout << "\n3. Find Height";
+        cout << "\n4. Search for a key";
+        cout << "\n5. Create Mirror Image";
+        cout << "\n6. Display Tree";
+        cout << "\n7. Exit";
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter key to insert: ";
+            cin >> key;
+            bst.insert_node(root, new node{key, nullptr, nullptr});
+            break;
+        case 2:
+            cout << "Inorder Traversal of BST:" << endl;
+            bst.inorder(root);
+            cout << endl;
+            break;
+        case 3:
+            bst.height(root, 0);
+            cout << "Height of BST: " << bst.h << endl;
+            break;
+        case 4:
+            cout << "Enter key to search: ";
+            cin >> key;
+            bst.flag = 0;
+            bst.search(root, key);
+            if (bst.flag == 1)
+                cout << key << " found in the BST." << endl;
+            else
+                cout << key << " not found in the BST." << endl;
+            break;
+        case 5:
+            bst.mirror(root);
+            cout << "Mirror Image created." << endl;
+            break;
+        case 6:
+            cout << "Binary Search Tree:" << endl;
+            bst.display(root, 0);
+            break;
+        case 7:
+            cout << "Exiting the program." << endl;
+            break;
+        default:
+            cout << "Invalid choice. Please enter a valid option." << endl;
+        }
+    } while (choice != 7);
+
+    return 0;
+}

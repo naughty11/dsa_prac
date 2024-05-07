@@ -1,0 +1,111 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+
+using namespace std;
+
+// Node structure
+class node {
+public:
+    int data;
+    node* link[10]; // 10-ary tree
+};
+
+// Declaring the ADT for creating a book
+class Tree {
+public:
+    void insert_chap(node*);
+    void insert_sec(node*);
+    void insert_subsec(node*);
+    void display(node*);
+};
+
+// Inserting the chapters in creating a book
+void Tree::insert_chap(node* root) {
+    int chap;
+    node* n;
+    cout << "How many chapters do you want to insert: " << endl;
+    cin >> chap;
+    for (int i = 0; i < chap; i++) {
+        n = new node;
+        n->data = i + 1;
+        for (int j = 0; j < 10; j++) {
+            n->link[j] = NULL;
+        }
+        root->link[i] = n;
+        insert_sec(root->link[i]);
+    }
+}
+
+// Inserting sections
+void Tree::insert_sec(node* root) {
+    int sec;
+    node* n;
+    cout << "How many sections do you want to insert for chapter " << root->data << "?" << endl;
+    cin >> sec;
+    for (int i = 0; i < sec; i++) {
+        n = new node;
+        n->data = i + 1;
+        for (int j = 0; j < 10; j++) {
+            n->link[j] = NULL;
+        }
+        root->link[i] = n;
+        insert_subsec(root->link[i]);
+    }
+}
+
+// Inserting subsections
+void Tree::insert_subsec(node* root) {
+    int subsec;
+    node* n;
+    cout << "Enter the number of subsections for section " << root->data << "?" << endl;
+    cin >> subsec;
+    for (int i = 0; i < subsec; i++) {
+        n = new node;
+        n->data = i + 1;
+        for (int j = 0; j < 10; j++) {
+            n->link[j] = NULL;
+        }
+        root->link[i] = n;
+    }
+}
+
+void Tree::display(node* root) {
+    if (root) {
+        cout << "Book index: ";
+        for (int i = 0; root->link[i] != NULL; i++) {
+            node* ch;
+            ch = root->link[i];
+            cout << ch->data << " chapter";
+            for (int j = 0; ch->link[j] != NULL; j++) {
+                node* s;
+                s = ch->link[j];
+                cout << endl;
+                cout << ch->data << "." << s->data << " section";
+                for (int k = 0; s->link[k] != NULL; k++) {
+                    node* ss;
+                    ss = s->link[k];
+                    cout << endl;
+                    cout << ch->data << "." << s->data << "." << ss->data << " subsection";
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    Tree myTree;
+    node* root = new node;
+    root->data = 0;
+    for (int i = 0; i < 10; i++) {
+        root->link[i] = NULL;
+    }
+
+    myTree.insert_chap(root);
+    myTree.display(root);
+
+    // Remember to free the allocated memory to prevent memory leaks
+    // You need to implement a proper function to delete the nodes in your tree.
+
+    return 0;
+}

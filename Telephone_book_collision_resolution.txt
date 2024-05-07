@@ -1,0 +1,71 @@
+MAX = 10
+HT = [0]*MAX
+
+def hash_fun(key):
+    return key%MAX
+    
+for i in range(len(HT)):
+     key =int(input("Enter the key:"))
+     ind =hash_fun(key)
+     print("INDEX:",ind)
+     if(HT[ind]==0):
+         HT[ind]==key
+     
+     else:
+          for j in range(len(HT)):
+              ind = int(key+j)%MAX
+              if(HT[ind]==0):
+                  HT[ind] = key
+                  break
+                  
+print("Linear probing with replacement!!")
+
+
+def linear_probing_insert(key):
+    ind = hash_fun(key)
+
+    if HT[ind] == 0:
+        HT[ind] = key
+    else:
+        occupied_key = HT[ind]
+        home_add_occupied_key = hash_fun(occupied_key)
+
+        if home_add_occupied_key != ind:
+            HT[ind] = key
+            key = occupied_key
+
+        for j in range(MAX):
+            ind = (key + j) % MAX
+
+            if HT[ind] == 0:
+                HT[ind] = key
+                break
+
+# Example usage:
+for _ in range(MAX):
+    key = int(input("\nEnter key: "))
+    linear_probing_insert(key)
+
+print("Hash Table:", HT)
+
+
+print("Quadratic Probing")
+
+def quadratic_probing_insert(key):
+    ind = int(key) % MAX
+
+    if HT[ind] == 0:
+        HT[ind] = key
+    else:
+        for j in range(MAX):
+            indn = (ind + j**2) % MAX
+            if HT[indn] == 0:
+                HT[indn] = key
+                break
+
+# Example usage:
+for _ in range(MAX):
+    key = input("\nEnter key: ")
+    quadratic_probing_insert(key)
+
+print("Hash Table:", HT)

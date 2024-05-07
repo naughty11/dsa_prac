@@ -1,0 +1,150 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+
+using namespace std;
+
+// Structure definition
+typedef struct student {
+    int rollno;
+    char name[20];
+    char cls[10];
+    char div[10];
+    char add[50];
+} student;
+
+// Class representing Sequential File operations
+class seq {
+public:
+    void search();
+    void insert();
+    void del();
+    void print();
+    void modify();
+};
+
+// Global file streams
+fstream master;
+fstream temp;
+
+// Function to insert a record into the Sequential File
+void insert() {
+    student st;
+    master.open("StudInfo.txt", ios::app | ios::in | ios::out);
+    master.clear();
+    cout << "\n Enter the record : \n";
+    cout << "\n Roll No. : Name : Class : Division : Address\n";
+    cin >> st.rollno >> st.name >> st.cls >> st.div >> st.add;
+    // Now write a record into file
+    master.write((char *)&st, sizeof st);
+    master.close();
+}
+
+// Function to print records of the Sequential File
+void print() {
+    student st;
+    master.open("StudInfo.txt", ios::in);
+    while (master.read((char *)&st, sizeof st))
+        cout << st.rollno << " " << st.name << " " << st.cls << " " << st.div << " " << st.add << endl;
+    cout << endl;
+    master.close();
+}
+
+// Function to modify a record in the Sequential File
+void modify() {
+    student st;
+    int rec_no;
+    master.open("StudInfo.txt", ios::in | ios::out); // original file
+    cout << "\n Enter the record no to be modified : ";
+    cin >> rec_no;
+    int loc = (rec_no - 1) * sizeof(st);
+    master.seekp(loc);
+    cout << "\n Enter the record : \n";
+    cout << "\n Roll No. : Name : Class : Division : Address\n";
+    cin >> st.rollno >> st.name >> st.cls >> st.div >> st.add;
+    master.write((char *)&st, sizeof st);
+    master.close();
+    cout << "\n";
+}
+
+// Function to search a record in the Sequential File
+void search() {
+    student st;
+    int rollno, flag = 0;
+    master.open("StudInfo.txt", ios::in);
+    cout << "\n Enter the roll no to be searched : ";
+    cin >> rollno;
+    while (master.read((char *)&st, sizeof st)) {
+        if (st.rollno == rollno) {
+            flag = 1;
+            cout << "\n record found \n ";
+            cout << st.rollno << " " << st.name << " " << st.cls << " " << st.div << " " << st.add << endl;
+            break;
+        }
+    }
+    if (flag == 0)
+        cout << "\n Record does not exist \n";
+    cout << "\n";
+    master.close();
+}
+
+// Function to delete a record from the Sequential File
+void del() {
+    student st;
+    int rec_no;
+    master.open("StudInfo.txt", ios::in | ios::out); // original file
+    temp.open("temp", ios::out); // temp file
+    cout << "\n Enter the record no to be deleted : ";
+    cin >> rec_no;
+    int count = 0;
+    while (master.read((char *)&st, sizeof st)) {
+        count++;
+        if (rec_no == count)
+            continue;
+        else
+            temp.write((char *)&st, sizeof st);
+    }
+    master.close();
+    temp.close();
+    master.open("StudInfo.txt", ios::out);
+    temp.open("temp", ios::in);
+    while (temp.read((char *)&st, sizeof st))
+        master.write((char *)&st, sizeof st);
+    master.close();
+    temp.close();
+    cout << "\n";
+}
+
+int main() {
+    seq seqObj;
+    int choice;
+    do {
+        cout << "\n1. Insert Record\n2. Print Records\n3. Modify Record\n4. Search Record\n5. Delete Record\n6. Exit\n";
+        cout << "Enter your choice : ";
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                insert();
+                break;
+            case 2:
+                print();
+                break;
+            case 3:
+                seqObj.modify();
+                break;
+            case 4:
+                search();
+                break;
+            case 5:
+                del();
+                break;
+            case 6:
+                cout << "Exiting...";
+                break;
+            default:
+                cout << "Invalid choice! Please try again.";
+        }
+    } while (choice != 6);
+
+    return 0;
+}

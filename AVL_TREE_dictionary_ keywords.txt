@@ -1,0 +1,93 @@
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    int data;
+    int bal;
+    Node *left;
+    Node *right;
+    Node(int data) : data(data), bal(0), left(nullptr), right(nullptr) {}
+};
+
+class AVLTree {
+public:
+    Node *insert(Node *root, Node *s);
+    Node *rotateRight(Node *root);
+    Node *rotateLeft(Node *root);
+    void inorder(Node *root);
+};
+
+Node *AVLTree::insert(Node *root, Node *s) {
+    if (root == nullptr)
+        return s;
+
+    if (s->data > root->data) {
+        if (root->right == nullptr)
+            root->right = s;
+        else
+            root->right = insert(root->right, s);
+    } else {
+        if (root->left == nullptr)
+            root->left = s;
+        else
+            root->left = insert(root->left, s);
+    }
+
+    if (root->left == nullptr && root->right != nullptr)
+        root->bal = -1;
+    else if (root->left != nullptr && root->right == nullptr)
+        root->bal = 1;
+    else
+        root->bal = 0;
+
+    if (root->bal == 1 && root->left->bal == 1)
+        root = rotateRight(root);
+    if (root->bal == -1 && root->right->bal == -1)
+        root = rotateLeft(root);
+    if (root->bal == 1 && root->left->bal == -1) {
+        root->left = rotateLeft(root->left);
+        root = rotateRight(root);
+    }
+    if (root->bal == -1 && root->right->bal == 1) {
+        root->right = rotateRight(root->right);
+        root = rotateLeft(root);
+    }
+    return root;
+}
+
+Node *AVLTree::rotateRight(Node *root) {
+    Node *temp = root->left;
+    root->left = temp->right;
+    temp->right = root;
+    return temp;
+}
+
+Node *AVLTree::rotateLeft(Node *root) {
+    Node *temp = root->right;
+    root->right = temp->left;
+    temp->left = root;
+    return temp;
+}
+
+void AVLTree::inorder(Node *root) {
+    if (root) {
+        inorder(root->left);
+        cout << root->data << " ";
+        inorder(root->right);
+    }
+}
+
+int main() {
+    AVLTree tree;
+    Node *root = nullptr;
+
+    root = tree.insert(root, new Node(10));
+    root = tree.insert(root, new Node(20));
+    root = tree.insert(root, new Node(30));
+
+    cout << "Inorder traversal of the AVL tree: ";
+    tree.inorder(root);
+
+    return 0;
+}

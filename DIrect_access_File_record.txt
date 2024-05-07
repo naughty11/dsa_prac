@@ -1,0 +1,79 @@
+#include <iostream> 
+#include <vector> 
+#include <unordered_map> 
+
+using namespace std; 
+
+struct Record { 
+    int key; 
+    string data; 
+}; 
+
+class DirectAccessFile { 
+private: 
+    unordered_map<int, Record> records; 
+    int file_size;  
+public: 
+    DirectAccessFile(int size) : file_size(size) {} 
+
+    void insertRecord(int key, const string& data) { 
+        if (records.size() >= file_size) { 
+            cout << "File is full. Cannot insert record." << endl;  
+            return; 
+        } 
+        records[key] = {key, data}; 
+        cout << "Record with key " << key << " inserted successfully." << endl;  
+    } 
+
+    // Function to delete a record from the file 
+    void deleteRecord(int key) { 
+        if (records.find(key) != records.end()) { 
+            records.erase(key); 
+            cout << "Record with key " << key << " deleted successfully." << endl;  
+        } else { 
+            cout << "Record with key " << key << " not found." << endl;  
+        } 
+    } 
+}; 
+
+int main() { 
+    // Define the size of the direct access file 
+    int file_size; 
+    cout << "Enter the size of the direct access file: "; 
+    cin >> file_size; 
+
+    // Create a direct access file object 
+    DirectAccessFile daf(file_size); 
+
+    // Menu for user interaction 
+    int choice, key; 
+    string data; 
+
+    while (true) { 
+        cout << "\n1. Insert a record\n2. Delete a record\n3. Exit\n";  
+        cout << "Enter your choice: "; 
+        cin >> choice; 
+
+        switch (choice) { 
+            case 1:
+                cout << "Enter key and data for the record to insert: "; 
+                cin >> key >> data; 
+                daf.insertRecord(key, data); 
+                break; 
+
+            case 2: 
+                cout << "Enter key of the record to delete: "; 
+                cin >> key; 
+                daf.deleteRecord(key); 
+                break; 
+
+            case 3: 
+                cout << "Exiting..." << endl; 
+                return 0; 
+
+            default: 
+                cout << "Invalid choice. Please try again." << endl; 
+        } 
+    } 
+    return 0; 
+}

@@ -1,0 +1,133 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct node 
+{
+    int data;
+    int weight;
+    char city[10];
+    node *next;
+};
+
+class Graph
+{
+public:
+    int n; // No of vertices or the number of cities
+    node *G[10]; // Heads of the linked list
+    Graph() : n(0) {} // Constructor to initialize n to 0
+
+    void Mapping();
+    void insert(int, int, int);
+    void readgraph();
+    void Display();
+    void Prims();
+};
+
+void Graph::Mapping()
+{
+    cout << "\nEnter the number of cities: ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        G[i] = new node; // Allocate memory for the node
+        G[i]->data = i;
+        G[i]->weight = 0;
+        cout << "Enter the name of city " << i << ": ";
+        cin >> G[i]->city;
+        G[i]->next = NULL;
+    }
+}
+
+void Graph::Display()
+{
+    for (int i = 0; i < n; i++) {
+        node *p = G[i];
+        while (p != NULL) {
+            cout << p->city << " ";
+            p = p->next;
+        }
+        cout << endl;
+    }
+}
+
+void Graph::readgraph()
+{
+    int vi, vj, e, w;
+    cout << "\nEnter the number of edges (connections between cities): ";
+    cin >> e;
+
+    for (int i = 0; i < e; i++) {
+        cout << "Enter an edge and its weight (u, v, w): ";
+        cin >> vi >> vj >> w;
+        insert(vi, vj, w);
+        insert(vj, vi, w);
+    }
+}
+
+void Graph::insert(int vi, int vj, int w)
+{
+    node *p = new node;
+    strcpy(p->city, G[vj]->city);
+    p->data = vj;
+    p->weight = w;
+    p->next = NULL;
+
+    if (G[vi] == NULL)
+        G[vi] = p;
+    else {
+        node *temp = G[vi];
+        while (temp->next != NULL)
+            temp = temp->next;
+        temp->next = p;
+    }
+}
+
+void Graph::Prims()
+{
+    int min_wt = 0;
+    int visited[10] = {0}; // Array to mark visited cities
+    int vertex[10] = {-1}; // Array to track visited vertices
+
+    visited[0] = 1; // Start with the first city
+    cout << "\nCities connected with minimum cost are:\n";
+    cout << G[0]->city << " ";
+
+    for (int i = 0; i < n - 1; i++) {
+        int m = 9999; // Set maximum value to find minimum cost
+        int v1, v2;
+
+        for (int j = 0; j <= i; j++) {
+            int v = vertex[j]; // Get element from the set of vertices
+            node *p = G[v]->next;
+
+            while (p != NULL) {
+                if (!visited[p->data]) {
+                    if (p->weight < m) {
+                        m = p->weight;
+                        v1 = v;
+                        v2 = p->data;
+                    }
+                }
+                p = p->next;
+            }
+        }
+
+        visited[v2] = 1; // Mark the city as visited
+        vertex[i + 1] = v2; // Add the city to the visited vertices
+        min_wt += m; // Add weight to the minimum cost
+        cout << G[v2]->city << " "; // Print the connected city
+    }
+
+    cout << "\nMinimum cost is " << min_wt << endl;
+}
+
+int main()
+{
+    Graph G;
+    G.Mapping();
+    G.readgraph();
+    G.Prims();
+
+    return 0;
+}

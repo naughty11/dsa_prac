@@ -1,0 +1,72 @@
+#include <iostream>
+using namespace std;
+
+const int MAX = 100;
+
+// Global variables
+int n;
+double p[MAX + 1]; // Successful search probabilities
+double q[MAX + 1]; // Unsuccessful search probabilities
+double w[MAX + 2][MAX + 2]; // Weight matrix
+double c[MAX + 2][MAX + 2]; // Cost matrix
+int r[MAX + 2][MAX + 2]; // Root matrix
+
+// Function to input the probabilities
+void inputProbabilities() {
+    cout << "\nEnter no. of nodes: ";
+    cin >> n;
+
+    cout << "\nEnter successful probability: ";
+    for (int i = 1; i <= n; i++) {
+        cin >> p[i];
+    }
+
+    cout << "\nEnter unsuccessful probability: ";
+    for (int i = 0; i <= n; i++) {
+        cin >> q[i];
+    }
+}
+
+// Function to calculate the optimal binary search tree
+void OBST() {
+    for (int i = 0; i < n; i++) {
+        r[i][i] = 0;
+        c[i][i] = 0;
+        w[i][i] = q[i];
+        w[i][i + 1] = p[i + 1] + q[i + 1] + w[i][i];
+        c[i][i + 1] = w[i][i + 1];
+        r[i][i + 1] = i + 1;
+    }
+
+    c[n][n] = 0.0;
+    r[n][n] = 0.0;
+    w[n][n] = q[n];
+
+    for (int i = 2; i <= n; i++) {
+        for (int j = 0; j <= n - i; j++) {
+            w[j][j + i] = w[j][j + i - 1] + p[j + i] + q[j + i];
+            c[j][j + i] = 999;
+            for (int k = j + 1; k <= j + i; k++) {
+                if (c[j][j + i] > c[j][k - 1] + c[k][j + i]) {
+                    c[j][j + i] = c[j][k - 1] + c[k][j + i];
+                    r[j][j + i] = k;
+                }
+            }
+            c[j][j + i] += w[j][j + i];
+        }
+    }
+}
+
+// Function to display the optimal binary search tree
+void displayOBST() {
+    cout << "\nOptimal Binary Search Tree:\n";
+    cout << "Root: " << r[0][n] << endl;
+    cout << "Cost: " << c[0][n] << endl;
+}
+
+int main() {
+    inputProbabilities();
+    OBST();
+    displayOBST();
+    return 0;
+}

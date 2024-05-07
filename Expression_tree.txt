@@ -1,0 +1,156 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+
+using namespace std;
+
+class Node
+{
+public:
+    char data;
+    int flag;
+    Node *left;
+    Node *right;
+};
+
+class Tree
+{
+public:
+    Node *data[30]; // Stack array for storing nodes.
+    int top;        // Top value of stack.
+
+    // Initialize the stack
+    Tree()
+    {
+        top = -1; // Fix: Added a missing semicolon here
+    }
+
+    // Check for an empty stack.
+    int empty()
+    {
+        if (top == -1)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    // Push the data into the stack
+    void push(Node *p)
+    {
+        data[++top] = p; // Storing the node into the stack
+    }
+
+    // Popping the data from the stack
+    Node *pop()
+    {
+        return data[top--]; // Remove the node from the Stack
+    }
+
+    void insert(Node *, Node *);
+    void post_order(Node *);
+    Node *construct_trees(char postfix[]);
+    bool isoperator(char c);
+};
+
+// For checking whether the given char is an operator
+bool Tree::isoperator(char c)
+{
+    if (c == '+' || c == '-' || c == '*' || c == '/')
+        return true;
+    else
+        return false;
+}
+
+// Construct expression tree
+Node *Tree::construct_trees(char postfix[])
+{
+    Node *t, *t1, *t2;
+
+    // Traversing through every char in the input expression
+    for (int i = 0; i < strlen(postfix); i++)
+    {
+        // If operand, simply push into stack
+        if (!isoperator(postfix[i]))
+        {
+            t = new Node;
+            t->data = postfix[i];
+            t->left = NULL; // Fix: Use NULL instead of null
+            t->right = NULL; // Fix: Use NULL instead of null
+            push(t);
+        }
+        else // Operator
+        {
+            t = new Node;
+            t->data = postfix[i];
+            t->left = NULL;  // Fix: Use NULL instead of null
+            t->right = NULL; // Fix: Use NULL instead of null
+
+            // Pop two nodes
+            t1 = pop();
+            t2 = pop();
+            t->right = t1;
+            t->left = t2;
+
+            // Adding the subexpression to the stack
+            push(t);
+        }
+    }
+
+    // The only element will be the root of the expression tree
+    t = pop();
+    return t;
+}
+
+// Post-order traversal of the expression Tree
+void Tree::post_order(Node *t)
+{
+    // Search toward left
+    while (t)
+    {
+        push(t);      // Push data into the stack
+        t = t->left;  // Move to the left
+    }
+
+    // Search towards right
+    while (!empty())
+    {
+        t = pop(); // Remove data from the stack
+        if (t->flag == 1) // Check for processed node
+            cout << " " << t->data;
+        else if (t->right == NULL) // Check the right link of the node
+            cout << " " << t->data; // Display root node
+        else
+        {
+            push(t);     // Push the same node into the stack
+            t->flag = 1; // Set as a processed node
+            t = t->right; // Take the right child of the node
+
+            // Again search for the left child
+            while (t)
+            {
+                push(t);    // Push into the stack
+                t = t->left; // Move to the left
+            }
+        }
+    }
+}
+
+int main()
+{
+    char ch;
+    Node *root, *s;
+    Tree t;
+    root = NULL; // Fix: Use NULL instead of null
+
+    char postfix[] = "ab+ef*g*-";
+    root = t.construct_trees(postfix);
+    cout << endl;
+    cout << "\n\nPost-order traversing is :";
+    t.post_order(root); // Fix: Change Postorder to post_order
+    cout << endl;
+    return 0;
+}
